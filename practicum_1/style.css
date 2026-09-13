@@ -1,0 +1,149 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background-color: #fcf0f3;
+    color: #4a3b3e;
+    padding: 40px 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.app-container {
+    max-width: 1200px;
+    width: 100%;
+}
+
+.top-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #f7d6de;
+}
+
+.top-header h1 {
+    color: #d87085;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.subtitle {
+    color: #9c6b74;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 30px;
+}
+
+@media (max-width: 950px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+.section-header h2 {
+    font-size: 20px;
+    color: #6b454d;
+    margin-bottom: 20px;
+}
+
+.rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(220, 160, 175, 0.15);
+    border: 1px solid #fae1e6;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 14px 30px rgba(220, 160, 175, 0.25);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.card-header h3 {
+    font-size: 18px;
+    color: #3d2c30;
+    white-space: nowrap;
+}
+
+.badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.badge.free {
+    background-color: #e2f7ed;
+    color: #1b7a4b;
+}
+
+.badge.booked {
+    background-color: #ffe0e6;
+    color: #d9435e;
+}
+
+.room-details {
+    font-size: 14px;
+    color: #6b454d;
+    background: #fff8f9;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-weight: 500;
+    border: 1px dashed #f5cbd3;
+    text-align: center;
+}
+
+.stats-card {
+    background: linear-gradient(135deg, #ffccd5 0%, #ffb3c1 100%);
+    border-radius: 20px;
+    padding: 24px;
+    color: #5c2a33;
+    box-shadow: 0 10px 25px rgba(255, 179, 193, 0.4);
+    position: sticky;
+    top: 20px;
+}
+
+.stats-card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+.stats-label {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 16px;
+    line-height: 1.4;
+}
+
+.stats-value {
+    font-size: 28px;
+    font-weight: 800;
+    color: #401820;
+}
