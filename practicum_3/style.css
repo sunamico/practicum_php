@@ -1,0 +1,130 @@
+body { 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+    background: #fdf0f3; 
+    color: #4a3b3e; 
+    padding: 20px; 
+    line-height: 1.6;
+}
+.container { 
+    max-width: 75%; 
+    margin: 0 auto; 
+    background: #ffffff; 
+    padding: 30px 40px; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 24px rgba(216, 112, 133, 0.15); 
+}
+
+h1 { 
+    color: #c45b70; 
+    text-align: center;
+    margin-bottom: 30px;
+}
+h2 { 
+    color: #d87085; 
+    border-bottom: 2px solid #ffe0e6; 
+    padding-bottom: 10px; 
+    margin-top: 35px;
+}
+
+.highlight { 
+    background: linear-gradient(135deg, #ffe0e6 0%, #ffcdd7 100%); 
+    padding: 20px 25px; 
+    border-radius: 10px; 
+    margin-bottom: 30px; 
+    border-left: 6px solid #d87085;
+    box-shadow: 0 4px 10px rgba(216, 112, 133, 0.1);
+}
+.highlight p {
+    margin: 8px 0;
+    font-size: 1.05em;
+}
+
+ul.room-list {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 15px;
+}
+ul.room-list li {
+    background: #fcf6f7;
+    border: 1px solid #f2e1e4;
+    padding: 18px 160px 18px 20px; 
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    position: relative; /* Дозволяє зафіксувати статус відносно картки */
+}
+
+ul.room-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(216, 112, 133, 0.12);
+    border-color: #d87085;
+}
+
+ul.room-list li:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 15px rgba(216, 112, 133, 0.12);
+    border-color: #d87085;
+}
+
+ul.room-list li strong {
+    background: #d87085;
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    letter-spacing: 0.5px;
+    margin-right: 10px;
+    display: inline-block;
+    margin-bottom: 8px;
+}
+ul.room-list li em {
+    display: block;
+    margin-top: 12px;
+    font-size: 0.9em;
+    color: #857477;
+    background: #ffffff;
+    padding: 10px 15px;
+    border-radius: 6px;
+    border: 1px dashed #e6c5cb;
+    font-style: normal;
+}
+ul.room-list li em::before {
+    content: '⚙️ Обладнання: ';
+    font-weight: bold;
+    color: #d87085;
+}
+
+.status-badge {
+    position: absolute;
+    right: 20px; 
+    top: 18px;   
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-available {
+    background-color: #e3fcef;
+    color: #178a4d;
+    border: 1px solid #b7ecd0;
+}
+
+.status-booked {
+    background-color: #ffeef0;
+    color: #d73a49;
+    border: 1px solid #ffdce0;
+}
+
+.price-tag {
+    font-weight: bold;
+    font-size: 1.05em;
+    color: #333;
+}
+
+ul.room-list li b {
+    font-size: 1.1em;
+    color: #c45b70;
+}
