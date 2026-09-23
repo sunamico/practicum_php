@@ -1,4 +1,3 @@
-<img width="1389" height="489" alt="Screenshot 2026-09-24 at 02 40 53" src="https://github.com/user-attachments/assets/19b42849-89f2-40cc-930b-cda0aaea8d01" />
 # Практична робота №4
 
 **Тема:** Взаємодія вебзастосунку з базою даних (PDO/MySQL)
@@ -12,9 +11,9 @@
 
 ---
 ## Варіант №8: Система бронювання(готель/зали)
-Таблиця: `rooms` (id, number, capacity, price_per_night).
-Вибірка: findAvailable($capacity) - SELECT * FROM rooms WHERE capacity >= :capacity; findByNumber($number) - SELECT * FROM rooms WHERE number = :number.
-Зміна даних: addRoom() - INSERT; updateRoom($id, ...) - UPDATE ... SET price_per_night = :price WHERE id = :id; deleteRoom($id) - DELETE FROM rooms WHERE id = :id.
+- Таблиця: `rooms` (id, number, capacity, price_per_night).
+- Вибірка: findAvailable($capacity) - SELECT * FROM rooms WHERE capacity >= :capacity; findByNumber($number) - SELECT * FROM rooms WHERE number = :number.
+- Зміна даних: addRoom() - INSERT; updateRoom($id, ...) - UPDATE ... SET price_per_night = :price WHERE id = :id; deleteRoom($id) - DELETE FROM rooms WHERE id = :id.
 ___
 
 ## Хід роботи
@@ -26,6 +25,7 @@ ___
 
 <img width="711" height="72" alt="image" src="https://github.com/user-attachments/assets/3beea880-35cd-4388-b8a8-7c10b1fb5fa9" />
 
+<img width="693" height="104" alt="image" src="https://github.com/user-attachments/assets/8375afa4-151e-485c-81ef-ba5a9db4e18d" />
 
 ### 2. Підключення до бази даних (db.php)
 
