@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS rooms (
     is_booked BOOLEAN DEFAULT FALSE
 );
 ```
+<img width="337" height="173" alt="image" src="https://github.com/user-attachments/assets/25c22f4c-03c3-4bd8-9c88-17bc2eed7b8f" />
 
 ---
 
