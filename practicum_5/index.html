@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Система бронювання </title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Бронювання номерів</h1>
+        
+        <!-- Крок 2: Поле пошуку та форма додавання -->
+        <div class="top-controls">
+            <div class="search-box">
+                <label for="search-capacity">Пошук від місткості (ос.):</label>
+                <input type="number" id="search-capacity" placeholder="Наприклад: 2" min="1">
+            </div>
+
+            <div class="form-box">
+                <h3>Додати новий номер</h3>
+                <form id="add-room-form">
+                    <input type="text" id="add-number" placeholder="Назва/Номер" required>
+                    <input type="number" id="add-capacity" placeholder="Місткість" min="1" required>
+                    <input type="number" id="add-price" placeholder="Ціна (грн)" step="0.01" min="0" required>
+                    <button type="submit" class="btn btn-success">Додати</button>
+                </form>
+            </div>
+        </div>
+
+        <div id="error-message"></div>
+        
+        <!-- Крок 2: Контейнер для результатів -->
+        <div id="results" class="rooms-grid">
+            
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
