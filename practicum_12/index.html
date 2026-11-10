@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Практична №12 — вікторина з Canvas-таймером</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Вікторина: основи веб-розробки</h1>
+    <p class="lead">Практична робота №12 · Canvas-таймер зворотного відліку на кожне питання</p>
+
+    <section id="quiz-panel" class="panel">
+        <div class="quiz-top">
+            <div class="quiz-info">
+                <span id="progress" class="muted">Питання 0 з 0</span>
+                <span id="score" class="muted">Правильних відповідей: 0</span>
+            </div>
+            <canvas id="timer" width="140" height="140" role="img" aria-label="Таймер зупинено"></canvas>
+        </div>
+
+        <h2 id="question-text">Натисніть «Почати», щоб розпочати вікторину</h2>
+        <div id="options" class="options"></div>
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+
+        <div class="controls">
+            <button id="btn-start" type="button" class="btn btn-primary">Почати</button>
+            <button id="btn-pause" type="button" class="btn btn-ghost" disabled>Пауза</button>
+        </div>
+        <p class="muted">Підказка: відповідати можна клавішами 1–4, пауза — клавіша P.</p>
+    </section>
+
+    <section class="panel">
+        <div class="history-head">
+            <h2>Історія результатів</h2>
+            <button id="btn-clear" type="button" class="btn btn-ghost">Очистити</button>
+        </div>
+        <p id="best" class="best muted"></p>
+        <div class="table-wrap">
+            <table>
+                <thead><tr><th>Дата</th><th>Результат</th><th>Час</th></tr></thead>
+                <tbody id="history"></tbody>
+            </table>
+        </div>
+        <p id="history-empty" class="muted">Збережених результатів поки немає.</p>
+    </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
