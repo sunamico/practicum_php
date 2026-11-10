@@ -201,7 +201,7 @@ function saveResult(result) {
 
 <img width="951" height="681" alt="image" src="https://github.com/user-attachments/assets/c0e5bc1e-45d0-40b6-86ab-bcbf6f2a564b" />
 
-![Відповідь користувача](screenshots/p12_06_answer_feedback.png)
+![Відповідь користувача]
 <img width="967" height="744" alt="Screenshot 2026-11-10 at 14 01 16" src="https://github.com/user-attachments/assets/6d8830ab-a087-4640-baf1-92cfc7c5577e" />
 
 ![Тайм-аут]
