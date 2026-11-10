@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Практична №6 — тестування API бронювання</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Тестування API бронювання</h1>
+    <p class="lead">Практична робота №6 · ендпоінт <code>api.php</code></p>
+
+    <section class="panel">
+        <h2>Готові запити</h2>
+        <div id="presets" class="chips"></div>
+    </section>
+
+    <section class="panel">
+        <h2>Запит</h2>
+        <form id="request-form" class="request-form">
+            <div class="row">
+                <select id="method" aria-label="HTTP-метод">
+                    <option>GET</option>
+                    <option>POST</option>
+                    <option>DELETE</option>
+                </select>
+                <input id="url" type="text" aria-label="URL запиту" value="api.php?resource=rooms" required>
+                <button type="submit" class="btn btn-primary">Надіслати</button>
+            </div>
+            <label for="body">Тіло запиту (JSON, лише для POST)</label>
+            <textarea id="body" rows="6" spellcheck="false"></textarea>
+        </form>
+    </section>
+
+    <section class="panel">
+        <h2>Відповідь</h2>
+        <div id="status" class="status-line">Запит ще не надсилався</div>
+        <pre id="output" class="code"></pre>
+    </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
