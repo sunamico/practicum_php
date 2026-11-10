@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Практична №7 — навантаження та оптимізація</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+    <h1>Навантаження та оптимізація API</h1>
+    <p class="lead">Практична робота №7 · порівняння «до» і «після» за часом, пам’яттю та кількістю SQL-запитів</p>
+
+    <div id="error-message"></div>
+
+    <section class="panel">
+        <h2>Список кімнат</h2>
+        <p class="muted">Кожна кімната повертається разом із кількістю кімнат такої самої місткості.</p>
+        <div class="chips">
+            <button id="btn-slow" type="button" class="btn btn-ghost">Повільно: N+1 запитів</button>
+            <button id="btn-fast" type="button" class="btn btn-primary">Швидко: один JOIN</button>
+        </div>
+        <div id="list-metrics" class="metrics"></div>
+        <p id="list-note" class="note muted"></p>
+    </section>
+
+    <section class="panel">
+        <h2>Вільні кімнати за місткістю</h2>
+        <form id="available-form" class="inline-form">
+            <div class="field">
+                <label for="capacity">Місткість</label>
+                <input id="capacity" type="number" min="1" value="4" required>
+            </div>
+            <label class="check"><input id="use-cache" type="checkbox" checked> Кеш (TTL 60 с)</label>
+            <button type="submit" class="btn btn-primary">Знайти</button>
+        </form>
+        <div id="avail-metrics" class="metrics"></div>
+        <p id="avail-note" class="note muted"></p>
+    </section>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
