@@ -170,7 +170,7 @@ function requireCsrf(): void
 2. Запит без токена через `curl`:
 
 ```bash
-curl -i -X POST "http://localhost/practicum_8/after/index.php" \
+curl -i -X POST "http://localhost:8000/practicum_8/after/index.php" \
   -d "action=book&room_id=1&guest_name=Test&date_from=2027-03-01&date_to=2027-03-03"
 ```
 
@@ -213,9 +213,6 @@ function validateRoom(array $in): array
 
 **Перевірка в обхід HTML-форми:** у DevTools → Elements видалено атрибут `required` з полів і відправлено порожню форму (або від'ємну місткість). У вразливій версії — сирий текст SQL-помилки, у захищеній — червоний банер зі списком зрозумілих помилок.
 
-> 📸 **Скріншот 9.** `before/index.php` після відправлення порожнього поля «Місткість» (без `required`): сира SQL-помилка. Збережіть як `screenshots/p8_09_validation_before.png`.
->
-> 📸 **Скріншот 10.** `after/index.php` після такого самого запиту: банер зі списком помилок валідації. Збережіть як `screenshots/p8_10_validation_after.png`.
 <img width="718" height="135" alt="Screenshot 2026-11-10 at 12 46 17" src="https://github.com/user-attachments/assets/bdd1f6d4-8237-4fb4-8ccb-23bcafeb45c5" />
 
 ![Валідація до виправлення]
