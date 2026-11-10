@@ -341,8 +341,17 @@ curl -i -X DELETE "http://localhost:8000/api.php?resource=rooms&id=1"
 | 8 | `POST ?resource=rooms&action=book` | `201` |
 | 9 | `POST ?resource=rooms&action=book` (ті самі дати) | `409` |
 | 10 | `DELETE ?resource=rooms&id=1` | `405` |
- 
+<img width="711" height="361" alt="Screenshot 2026-11-10 at 11 11 00" src="https://github.com/user-attachments/assets/d7526b4c-b006-4485-8993-79099dc9dff3" />
+ <img width="723" height="349" alt="Screenshot 2026-11-10 at 11 11 14" src="https://github.com/user-attachments/assets/8c7a0010-3f8b-4c5b-9b1b-63d581a84016" />
+<img width="714" height="400" alt="Screenshot 2026-11-10 at 11 11 36" src="https://github.com/user-attachments/assets/09c952f0-4692-42d9-b230-e080444b3d1a" />
+<img width="702" height="423" alt="Screenshot 2026-11-10 at 11 11 50" src="https://github.com/user-attachments/assets/fb377a00-051d-4a4b-9196-926ba88e0a95" />
+<img width="706" height="432" alt="Screenshot 2026-11-10 at 11 12 03" src="https://github.com/user-attachments/assets/d5ddf83a-98c8-4edc-9aa6-149024aa5f27" />
+
 <img width="738" height="820" alt="Screenshot 2026-11-10 at 11 01 36" src="https://github.com/user-attachments/assets/c3bd86e4-ab4a-4f4b-8b54-7e74c3f421e9" /> 
+<img width="705" height="438" alt="Screenshot 2026-11-10 at 11 12 18" src="https://github.com/user-attachments/assets/2d02a6ec-df1b-47d8-95e5-ce2e7a014f9d" />
+<img width="705" height="438" alt="Screenshot 2026-11-10 at 11 12 53" src="https://github.com/user-attachments/assets/5e1887cc-ef72-44bd-b67b-83ac43516398" />
+<img width="703" height="421" alt="Screenshot 2026-11-10 at 11 13 08" src="https://github.com/user-attachments/assets/9e42f3a6-8114-4464-a9bd-87d55c16908e" />
+
 ![Сторінка тестування API]
  
 * * *
