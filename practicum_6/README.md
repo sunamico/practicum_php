@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS bookings (
  
 <img width="833" height="97" alt="Screenshot 2026-11-10 at 10 35 43" src="https://github.com/user-attachments/assets/03b49c1d-fe81-4ba1-8e55-e9244dedd2fe" />
 
-![Структура БД practicum6]
+ Структура БД practicum6  
  
 * * *
  
@@ -76,14 +76,14 @@ CREATE TABLE IF NOT EXISTS bookings (
 | POST | `api.php?resource=rooms&action=book` | `room_id, guest_name, date_from, date_to` | `201` бронювання | `400`, `404` немає кімнати, `409` дати зайняті |
 | інший метод | `api.php?resource=rooms` | — | — | `405` + заголовок `Allow` |
  
-Приклад успішної відповіді: `{"success": true, "data": [...]}`; приклад помилки: `{"success": false, "error": "..."}`.
+Приклад успішної відповіді: `{"success": true, "data": [...  }`; приклад помилки: `{"success": false, "error": "..."}`.
  
 **Фрагмент коду (`api.php`):**
  
 ```php
 /**
  * GET  api.php?resource=rooms
- *      -> 200 {"success":true,"data":[{id,number,capacity,price_per_night},...]}
+ *      -> 200 {"success":true,"data":[{id,number,capacity,price_per_night},...  }
  * GET  api.php?resource=rooms&id=N
  *      -> 200 один запис | 404 якщо id немає | 400 якщо id некоректний
  * POST api.php?resource=rooms                      (створення)
@@ -96,13 +96,13 @@ CREATE TABLE IF NOT EXISTS bookings (
  
 <img width="599" height="347" alt="Screenshot 2026-11-10 at 10 36 55" src="https://github.com/user-attachments/assets/60322d74-3223-4c72-a294-af95ef4b3af0" />
  
-![Контракт API у коментарі api.php]
+ Контракт API у коментарі api.php  
  
 * * *
  
 ### Крок 2. Створити єдину точку входу
  
-У файлі `api.php` одразу на початку встановлено заголовок `Content-Type: application/json`, після чого отримано метод запиту (`$_SERVER['REQUEST_METHOD']`) та параметри `resource`, `id`, `action` з `$_GET`. Усі запити до API надходять в один файл.
+У файлі `api.php` одразу на початку встановлено заголовок `Content-Type: application/json`, після чого отримано метод запиту (`$_SERVER['REQUEST_METHOD'  `) та параметри `resource`, `id`, `action` з `$_GET`. Усі запити до API надходять в один файл.
  
 **Фрагмент коду (`api.php`):**
  
@@ -110,14 +110,14 @@ CREATE TABLE IF NOT EXISTS bookings (
 header('Content-Type: application/json; charset=utf-8');
 require_once __DIR__ . '/db.php';
  
-$method   = $_SERVER['REQUEST_METHOD'];
-$resource = $_GET['resource'] ?? null;
-$id       = $_GET['id'] ?? null;
-$action   = $_GET['action'] ?? null;
+$method   = $_SERVER['REQUEST_METHOD'  ;
+$resource = $_GET['resource'   ?? null;
+$id       = $_GET['id'   ?? null;
+$action   = $_GET['action'   ?? null;
 ```
  <img width="1466" height="816" alt="Screenshot 2026-11-10 at 10 41 40" src="https://github.com/user-attachments/assets/634707ee-24d6-4ce2-8710-fce745248a15" />
  
-![Заголовок Content-Type у DevTools]
+ Заголовок Content-Type у DevTools  
  
 * * *
  
@@ -132,7 +132,7 @@ try {
     if ($resource !== 'rooms') {
         fail(404, 'Невідомий ресурс');
     }
-    if (!in_array($method, ['GET', 'POST'], true)) {
+    if (!in_array($method, ['GET', 'POST'  , true)) {
         header('Allow: GET, POST');
         fail(405, 'Метод не підтримується для ресурсу rooms');
     }
@@ -156,7 +156,7 @@ try {
  
 <img width="1466" height="465" alt="Screenshot 2026-11-10 at 10 43 26" src="https://github.com/user-attachments/assets/13e94d72-5e92-4bec-a726-dd7165377430" />
  
-![Невідомий ресурс — 404]
+ Невідомий ресурс — 404  
  
 * * *
  
@@ -170,7 +170,7 @@ try {
 function listRooms(PDO $pdo): void
 {
     $rows = $pdo->query('SELECT id, number, capacity, price_per_night FROM rooms ORDER BY id')->fetchAll();
-    respond(200, ['success' => true, 'data' => array_map('formatRoom', $rows)]);
+    respond(200, ['success' => true, 'data' => array_map('formatRoom', $rows)  );
 }
  
 function getRoom(PDO $pdo, int $id): void
@@ -179,19 +179,19 @@ function getRoom(PDO $pdo, int $id): void
     if ($room === null) {
         fail(404, 'Кімнату з id=' . $id . ' не знайдено');
     }
-    respond(200, ['success' => true, 'data' => $room]);
+    respond(200, ['success' => true, 'data' => $room  );
 }
 ```
  
 <img width="472" height="734" alt="Screenshot 2026-11-10 at 10 45 27" src="https://github.com/user-attachments/assets/2660d6a0-24ef-4723-b451-7e9fcbb5ad97" />
 
-![GET список]
+ GET список  
  <img width="716" height="776" alt="Screenshot 2026-11-10 at 10 46 12" src="https://github.com/user-attachments/assets/d87cb6ac-ca01-472c-8c8b-59e9be980119" />
 
-![GET один запис]
+ GET один запис  
  <img width="708" height="439" alt="Screenshot 2026-11-10 at 10 46 46" src="https://github.com/user-attachments/assets/1b28858c-72f1-4d77-8078-8dfc92532877" />
 
-![GET неіснуючий id — 404]
+ GET неіснуючий id — 404  
  
 * * *
  
@@ -204,12 +204,12 @@ function getRoom(PDO $pdo, int $id): void
 ```php
 function createRoom(PDO $pdo): void
 {
-    [$number, $capacity, $price] = validateRoom(readInput());
+    [$number, $capacity, $price   = validateRoom(readInput());
  
     $stmt = $pdo->prepare('INSERT INTO rooms (number, capacity, price_per_night) VALUES (:number, :capacity, :price)');
-    $stmt->execute(['number' => $number, 'capacity' => $capacity, 'price' => $price]);
+    $stmt->execute(['number' => $number, 'capacity' => $capacity, 'price' => $price  );
  
-    respond(201, ['success' => true, 'data' => findRoom($pdo, (int) $pdo->lastInsertId())]);
+    respond(201, ['success' => true, 'data' => findRoom($pdo, (int) $pdo->lastInsertId())  );
 }
 ```
  
@@ -226,10 +226,10 @@ curl -i -X POST "http://localhost:8000/api.php?resource=rooms" \
 
  <img width="822" height="128" alt="Screenshot 2026-11-10 at 10 52 03" src="https://github.com/user-attachments/assets/e660cd39-74e6-4447-af25-cb862f96c3a8" />
 
-![POST — 201 Created]
+ POST — 201 Created  
  <img width="469" height="182" alt="image" src="https://github.com/user-attachments/assets/565024bd-b68c-4585-bc4e-eed68e183db6" />
 
-![Новий запис у таблиці rooms]
+ Новий запис у таблиці rooms  
  
 * * *
  
@@ -243,7 +243,7 @@ curl -i -X POST "http://localhost:8000/api.php?resource=rooms" \
 $pdo->beginTransaction();
  
 $stmt = $pdo->prepare('SELECT id, price_per_night FROM rooms WHERE id = :id FOR UPDATE');
-$stmt->execute(['id' => $roomId]);
+$stmt->execute(['id' => $roomId  );
 $room = $stmt->fetch();
 if ($room === false) {
     $pdo->rollBack();
@@ -254,7 +254,7 @@ if ($room === false) {
 $stmt = $pdo->prepare(
     'SELECT COUNT(*) FROM bookings WHERE room_id = :room AND date_from < :new_to AND date_to > :new_from'
 );
-$stmt->execute(['room' => $roomId, 'new_to' => $to->format('Y-m-d'), 'new_from' => $from->format('Y-m-d')]);
+$stmt->execute(['room' => $roomId, 'new_to' => $to->format('Y-m-d'), 'new_from' => $from->format('Y-m-d')  );
 if ((int) $stmt->fetchColumn() > 0) {
     $pdo->rollBack();
     fail(409, 'Кімната вже заброньована на ці дати');
@@ -273,13 +273,13 @@ curl -i -X POST "http://localhost:8000/api.php?resource=rooms&action=book" \
  
 <img width="831" height="143" alt="Screenshot 2026-11-10 at 10 57 18" src="https://github.com/user-attachments/assets/b5d8110b-d83b-46d3-a652-069dbb9af451" />
 
-![Бронювання — 201]
+ Бронювання — 201  
  <img width="826" height="132" alt="Screenshot 2026-11-10 at 10 57 47" src="https://github.com/user-attachments/assets/ed09af2a-17ac-42d3-9e02-c2bf31d16bea" />
 
-![Повторне бронювання — 409]
+ Повторне бронювання — 409  
  <img width="567" height="74" alt="Screenshot 2026-11-10 at 10 58 12" src="https://github.com/user-attachments/assets/d12d47f0-bd30-4f08-b1c3-2bc60522d011" />
 
-![Запис у таблиці bookings]
+ Запис у таблиці bookings  
  
 * * *
  
@@ -292,12 +292,12 @@ curl -i -X POST "http://localhost:8000/api.php?resource=rooms&action=book" \
 ```php
 function validateRoom(array $in): array
 {
-    $number = is_scalar($in['number'] ?? null) ? trim((string) $in['number']) : '';
+    $number = is_scalar($in['number'   ?? null) ? trim((string) $in['number'  ) : '';
     if ($number === '' || mb_strlen($number) > 50) {
         fail(400, 'Поле «number» обов’язкове (1–50 символів)');
     }
  
-    $capacity = filter_var($in['capacity'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000]]);
+    $capacity = filter_var($in['capacity'   ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000    );
     if ($capacity === false) {
         fail(400, 'Поле «capacity» має бути цілим числом від 1 до 1000');
     }
@@ -318,10 +318,10 @@ curl -i -X DELETE "http://localhost:8000/api.php?resource=rooms&id=1"
 ```
  <img width="825" height="130" alt="Screenshot 2026-11-10 at 10 59 28" src="https://github.com/user-attachments/assets/34201364-08cc-4501-813f-46a251962ffe" />
 
-![Некоректні дані — 400]
+ Некоректні дані — 400  
  <img width="801" height="127" alt="Screenshot 2026-11-10 at 11 00 25" src="https://github.com/user-attachments/assets/571e287f-47ce-4883-b418-6e0a0d90d752" />
 
-![Непідтримуваний метод — 405]
+ Непідтримуваний метод — 405  
  
 * * *
  
@@ -352,7 +352,7 @@ curl -i -X DELETE "http://localhost:8000/api.php?resource=rooms&id=1"
 <img width="705" height="438" alt="Screenshot 2026-11-10 at 11 12 53" src="https://github.com/user-attachments/assets/5e1887cc-ef72-44bd-b67b-83ac43516398" />
 <img width="703" height="421" alt="Screenshot 2026-11-10 at 11 13 08" src="https://github.com/user-attachments/assets/9e42f3a6-8114-4464-a9bd-87d55c16908e" />
 
-![Сторінка тестування API]
+ Сторінка тестування API  
  
 * * *
  
