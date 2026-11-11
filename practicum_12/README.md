@@ -40,7 +40,7 @@ practicum_12/
 
 <img width="946" height="754" alt="Screenshot 2026-11-10 at 13 56 36" src="https://github.com/user-attachments/assets/fa253d95-e0e6-4bd1-8b75-b5efc488a5b0" />
 
-![Початковий стан вікторини]
+ Початковий стан вікторини  
 
 * * *
 
@@ -76,7 +76,7 @@ ctx.scale(dpr, dpr);
 
 <img width="698" height="60" alt="Screenshot 2026-11-10 at 13 52 41" src="https://github.com/user-attachments/assets/1300eb01-d988-4fa6-b5d2-a936601a71cf" />
 
-![Canvas і 2D-контекст]
+ Canvas і 2D-контекст  
 
 * * *
 
@@ -92,11 +92,11 @@ ctx.scale(dpr, dpr);
 const QUESTIONS = [
     {
         text: 'Який HTTP-код статусу означає, що новий запис успішно створено?',
-        options: ['200 OK', '201 Created', '204 No Content', '302 Found'],
+        options: ['200 OK', '201 Created', '204 No Content', '302 Found'  ,
         correct: 1,
     },
     // ... ще 7 питань
-];
+  ;
 
 function drawTimer() {
     const total = TIME_PER_QUESTION * 1000;
@@ -128,10 +128,10 @@ function drawTimer() {
 
 <img width="321" height="196" alt="Screenshot 2026-11-10 at 13 57 07" src="https://github.com/user-attachments/assets/731409b2-c2e8-4d7f-b59e-16615d103630" />
 
-![Таймер посеред відліку]
+ Таймер посеред відліку  
 <img width="290" height="192" alt="Screenshot 2026-11-10 at 13 57 22" src="https://github.com/user-attachments/assets/a720e651-04c3-4e31-8e49-fba8507c9b0d" />
 
-![Таймер наприкінці відліку]
+ Таймер наприкінці відліку  
 
 * * *
 
@@ -169,7 +169,7 @@ function startTimer() {
 
 <img width="433" height="379" alt="Screenshot 2026-11-10 at 13 54 37" src="https://github.com/user-attachments/assets/5100b95b-d85b-4e24-834d-256c00edd863" />
 
-![Цикл requestAnimationFrame]
+ Цикл requestAnimationFrame  
 
 * * *
 
@@ -185,7 +185,7 @@ function onAnswer(chosen) {
         return;
     }
     stopTimer();   // відповіли — таймер зупиняється
-    const correct = chosen === QUESTIONS[state.index].correct;
+    const correct = chosen === QUESTIONS[state.index  .correct;
     if (correct) {
         state.score++;
     }
@@ -201,17 +201,17 @@ function saveResult(result) {
 
 <img width="951" height="681" alt="image" src="https://github.com/user-attachments/assets/c0e5bc1e-45d0-40b6-86ab-bcbf6f2a564b" />
 
-![Відповідь користувача]
+ Відповідь користувача  
 <img width="967" height="744" alt="Screenshot 2026-11-10 at 14 01 16" src="https://github.com/user-attachments/assets/6d8830ab-a087-4640-baf1-92cfc7c5577e" />
 
-![Тайм-аут]
+ Тайм-аут  
 <img width="950" height="766" alt="Screenshot 2026-11-10 at 13 55 22" src="https://github.com/user-attachments/assets/9c0f33d0-37b2-476b-a12a-fc6ee3732fdd" />
 
 
-![Результат та історія]
+ Результат та історія  
 <img width="1470" height="146" alt="Screenshot 2026-11-10 at 13 58 50" src="https://github.com/user-attachments/assets/bf170a5c-96d3-44fe-9ccc-fa1ecb83c2d8" />
 
-![localStorage]
+ localStorage  
 
 * * *
 
@@ -250,7 +250,7 @@ document.addEventListener('keydown', (e) => {
 
 <img width="891" height="630" alt="image" src="https://github.com/user-attachments/assets/dc13a725-27e3-4ff1-9b4a-0d16df682e48" />
 
-![Пауза]
+ Пауза  
 
 * * *
 
@@ -284,11 +284,11 @@ window.addEventListener('pagehide', stopTimer);
 
 <img width="1023" height="410" alt="image" src="https://github.com/user-attachments/assets/3b52716d-4887-40ad-8956-ca6d1b67e551" />
 
-![Performance]
+ Performance  
 <img width="1024" height="703" alt="image" src="https://github.com/user-attachments/assets/e49c854f-1d28-4159-a2a2-c45035d843f6" />
 <img width="504" height="296" alt="image" src="https://github.com/user-attachments/assets/7974403f-185a-4a80-8594-73f8b6bca1f7" />
 
-![state.rafId у консолі]
+ state.rafId у консолі  
 
 * * *
 
