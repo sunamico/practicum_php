@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS rooms (
 
 <img width="735" height="770" alt="Screenshot 2026-11-10 at 12 24 33" src="https://github.com/user-attachments/assets/4ccfe66e-9329-4e78-9598-d1ecf930e78e" />
 
-![Застосунок до виправлень]
+ Застосунок до виправлень  
 
 * * *
 
@@ -79,7 +79,7 @@ $rooms = $pdo->query("SELECT * FROM rooms WHERE number = '$q'")->fetchAll();
 
 ```php
 $stmt = $pdo->prepare('SELECT id, number, capacity, price_per_night FROM rooms WHERE number = :q ORDER BY id');
-$stmt->execute(['q' => $q]);
+$stmt->execute(['q' => $q  );
 ```
 
 **Перевірка payload** `' OR '1'='1` у полі пошуку «Номер кімнати»:
@@ -90,10 +90,10 @@ $stmt->execute(['q' => $q]);
 
 <img width="723" height="393" alt="Screenshot 2026-11-10 at 12 26 29" src="https://github.com/user-attachments/assets/1ce26500-6056-4d1e-ab8f-cbd51bc46fc8" />
 
-![SQL-ін'єкція до виправлення]
+ SQL-ін'єкція до виправлення  
 <img width="709" height="300" alt="Screenshot 2026-11-10 at 12 27 50" src="https://github.com/user-attachments/assets/840161ec-cd8c-49f5-b5a9-da59a217a9b8" />
 
-![SQL-ін'єкція після виправлення]
+ SQL-ін'єкція після виправлення  
 
 * * *
 
@@ -104,7 +104,7 @@ $stmt->execute(['q' => $q]);
 **До (вразливо):**
 
 ```php
-<td><?= $r['number'] ?></td>
+<td><?= $r['number'   ?></td>
 ```
 
 **Після (безпечно):**
@@ -115,7 +115,7 @@ function e(mixed $value): string
     return htmlspecialchars((string) $value, ENT_QUOTES, 'UTF-8');
 }
 // ...
-<td><?= e($r['number']) ?></td>
+<td><?= e($r['number'  ) ?></td>
 ```
 
 **Перевірка payload:**
@@ -126,10 +126,10 @@ function e(mixed $value): string
 
 <img width="615" height="271" alt="Screenshot 2026-11-10 at 12 30 34" src="https://github.com/user-attachments/assets/6e12cdb7-ed8d-4f16-bdff-a5f9e2e9f906" />
 
-![XSS до виправлення]
+ XSS до виправлення  
 <img width="732" height="437" alt="Screenshot 2026-11-10 at 12 32 50" src="https://github.com/user-attachments/assets/400b2de4-ec49-4120-8076-34f2412b9bfa" />
 
-![XSS після виправлення]
+ XSS після виправлення  
 
 * * *
 
@@ -142,22 +142,22 @@ function e(mixed $value): string
 ```php
 function startSecureSession(): void
 {
-    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
+    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax'  );
     session_start();
-    if (empty($_SESSION['csrf_token'])) {
-        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    if (empty($_SESSION['csrf_token'  )) {
+        $_SESSION['csrf_token'   = bin2hex(random_bytes(32));
     }
 }
 
 function csrfField(): string
 {
-    return '<input type="hidden" name="csrf_token" value="' . e($_SESSION['csrf_token']) . '">';
+    return '<input type="hidden" name="csrf_token" value="' . e($_SESSION['csrf_token'  ) . '">';
 }
 
 function requireCsrf(): void
 {
-    $token = $_POST['csrf_token'] ?? '';
-    if (!is_string($token) || !hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    $token = $_POST['csrf_token'   ?? '';
+    if (!is_string($token) || !hash_equals($_SESSION['csrf_token'   ?? '', $token)) {
         http_response_code(403);
         exit('Недійсний CSRF-токен');
     }
@@ -178,13 +178,13 @@ curl -i -X POST "http://localhost:8000/practicum_8/after/index.php" \
 
 <img width="707" height="195" alt="Screenshot 2026-11-10 at 12 40 06" src="https://github.com/user-attachments/assets/464b49f2-f390-489d-854c-f73a7a1495d5" />
 
-![CSRF до виправлення]
+ CSRF до виправлення  
 <img width="757" height="270" alt="Screenshot 2026-11-10 at 12 40 33" src="https://github.com/user-attachments/assets/8c91df6d-b31b-4e42-b2b2-be44271995ed" />
 
-![CSRF після виправлення — 403]
+ CSRF після виправлення — 403  
 <img width="1047" height="179" alt="Screenshot 2026-11-10 at 12 42 46" src="https://github.com/user-attachments/assets/7b6811e8-da86-4718-b79c-0a4908c3dcb5" />
 
-![curl без токена — 403]
+ curl без токена — 403  
 
 * * *
 
@@ -197,17 +197,17 @@ curl -i -X POST "http://localhost:8000/practicum_8/after/index.php" \
 ```php
 function validateRoom(array $in): array
 {
-    $errors = [];
-    $number = is_scalar($in['number'] ?? null) ? trim((string) $in['number']) : '';
+    $errors = [  ;
+    $number = is_scalar($in['number'   ?? null) ? trim((string) $in['number'  ) : '';
     if ($number === '' || mb_strlen($number) > 50) {
-        $errors[] = 'Номер кімнати обов’язковий (до 50 символів).';
+        $errors[   = 'Номер кімнати обов’язковий (до 50 символів).';
     }
-    $capacity = filter_var($in['capacity'] ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000]]);
+    $capacity = filter_var($in['capacity'   ?? null, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1, 'max_range' => 1000    );
     if ($capacity === false) {
-        $errors[] = 'Місткість має бути цілим числом від 1 до 1000.';
+        $errors[   = 'Місткість має бути цілим числом від 1 до 1000.';
     }
     // ... аналогічно ціна
-    return [$errors, ['number' => $number, 'capacity' => $capacity, 'price' => $price]];
+    return [$errors, ['number' => $number, 'capacity' => $capacity, 'price' => $price    ;
 }
 ```
 
@@ -215,10 +215,10 @@ function validateRoom(array $in): array
 
 <img width="718" height="135" alt="Screenshot 2026-11-10 at 12 46 17" src="https://github.com/user-attachments/assets/bdd1f6d4-8237-4fb4-8ccb-23bcafeb45c5" />
 
-![Валідація до виправлення]
+ Валідація до виправлення  
 <img width="711" height="129" alt="Screenshot 2026-11-10 at 12 47 29" src="https://github.com/user-attachments/assets/e900772a-d36b-436e-a7bd-93aafe33aa10" />
 
-![Валідація після виправлення]
+ Валідація після виправлення  
 
 * * *
 
@@ -229,7 +229,7 @@ function validateRoom(array $in): array
 **До (вразливо):**
 
 ```php
-<a class="btn btn-danger" href="index.php?delete_booking=<?= $b['id'] ?>">Видалити</a>
+<a class="btn btn-danger" href="index.php?delete_booking=<?= $b['id'   ?>">Видалити</a>
 ```
 
 **Після (безпечно):**
@@ -238,7 +238,7 @@ function validateRoom(array $in): array
 <form method="post" onsubmit="return confirm('Видалити бронювання?');">
     <?= csrfField() ?>
     <input type="hidden" name="action" value="delete_booking">
-    <input type="hidden" name="id" value="<?= e($b['id']) ?>">
+    <input type="hidden" name="id" value="<?= e($b['id'  ) ?>">
     <button type="submit" class="btn btn-danger">Видалити</button>
 </form>
 ```
@@ -248,10 +248,10 @@ function validateRoom(array $in): array
 <img width="705" height="186" alt="Screenshot 2026-11-10 at 12 52 06" src="https://github.com/user-attachments/assets/289d1d6b-0410-4ae7-b255-833521b13363" />
 <img width="709" height="170" alt="Screenshot 2026-11-10 at 12 52 38" src="https://github.com/user-attachments/assets/6f7df435-a6be-4b16-a9f4-f942a72a8f3e" />
 
-![Видалення через GET до виправлення]
+ Видалення через GET до виправлення  
 <img width="834" height="793" alt="Screenshot 2026-11-10 at 12 57 04" src="https://github.com/user-attachments/assets/5ce9c004-7eb0-49e0-83b0-74b437f36445" />
 
-![Видалення через POST з підтвердженням]
+ Видалення через POST з підтвердженням  
 
 * * *
 
@@ -272,7 +272,7 @@ function validateRoom(array $in): array
 ```php
 } catch (PDOException $e) {
     error_log('practicum8: ' . $e->getMessage());
-    $errors[] = 'Сталася помилка під час роботи з базою даних. Спробуйте пізніше.';
+    $errors[   = 'Сталася помилка під час роботи з базою даних. Спробуйте пізніше.';
 }
 ```
 
@@ -280,10 +280,10 @@ function validateRoom(array $in): array
 
 <img width="725" height="150" alt="Screenshot 2026-11-10 at 12 58 59" src="https://github.com/user-attachments/assets/a0dfac36-c9b3-4267-a92e-04a4dec3031b" />
 
-![Сира помилка до виправлення]
+ Сира помилка до виправлення  
 <img width="701" height="122" alt="Screenshot 2026-11-10 at 12 59 22" src="https://github.com/user-attachments/assets/ddd3a5d1-ff73-4b3f-88ab-031b3f02053f" />
 
-![Загальне повідомлення та запис у логу]
+ Загальне повідомлення та запис у логу  
 
 * * *
 
@@ -291,7 +291,7 @@ function validateRoom(array $in): array
 
 | Вразливість | Payload / спосіб перевірки | Результат до | Виправлення | Результат після |
 |-------------|----------------------------|--------------|-------------|-----------------|
-| SQL-ін'єкція (пошук за номером) | `' OR '1'='1` | показано всі кімнати | `prepare()` + `execute(['q' => $q])` | «Кімнат не знайдено» |
+| SQL-ін'єкція (пошук за номером) | `' OR '1'='1` | показано всі кімнати | `prepare()` + `execute(['q' => $q  )` | «Кімнат не знайдено» |
 | XSS (поле `number`, пошук) | `<img src=x onerror=alert(1)>`, `<script>alert(1)</script>` | спливає `alert` | `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` через `e()` | payload показано як текст |
 | CSRF (форма бронювання) | форма на `evil.html`, `curl` без токена | бронювання створено | токен у сесії + `hash_equals()` у `requireCsrf()` | `403 Недійсний CSRF-токен` |
 | Незахищена дія (видалення) | `?delete_booking=1` у адресному рядку | бронювання видалено | POST + CSRF-токен + `confirm()` | GET-запит нічого не видаляє |
@@ -303,7 +303,7 @@ function validateRoom(array $in): array
 <img width="741" height="823" alt="Screenshot 2026-11-10 at 13 01 10" src="https://github.com/user-attachments/assets/279e59b6-c39b-4021-87c6-b6326e81b5a7" />
 <img width="696" height="135" alt="Screenshot 2026-11-10 at 13 02 12" src="https://github.com/user-attachments/assets/048b974d-93f9-49a3-9633-394af16def7e" />
 
-![Застосунок після виправлень]
+ Застосунок після виправлень  
 
 * * *
 
