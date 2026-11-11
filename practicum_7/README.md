@@ -51,7 +51,7 @@ SELECT capacity, COUNT(*) FROM rooms GROUP BY capacity LIMIT 3;
 <img width="953" height="265" alt="Screenshot 2026-11-10 at 11 33 17" src="https://github.com/user-attachments/assets/a139bae5-00fe-474f-aeb7-0132187bb1a8" />
 <img width="774" height="561" alt="Screenshot 2026-11-10 at 11 34 10" src="https://github.com/user-attachments/assets/108d3ba9-f473-44a1-98af-a47b68107da2" />
 
-![Структура таблиці rooms і дані для навантаження]
+Структура таблиці rooms і дані для навантаження
 
 * * *
 
@@ -77,11 +77,11 @@ function profile(callable $fn): array
 }
 ```
 
-Виклик: `http://localhost/practicum_7/api.php?resource=rooms&mode=slow&debug=1`. Отримані значення — базова лінія («до»).
+Виклик: `http://localhost:8000/api.php?resource=rooms&mode=slow&debug=1`. Отримані значення — базова лінія («до»). 
 
-<img width="800" height="470" alt="Screenshot 2026-11-10 at 11 36 09" src="https://github.com/user-attachments/assets/bdecaee4-f2f6-46c9-9db8-66d49ca84c27" />
+<img width="1568" height="693" alt="image" src="https://github.com/user-attachments/assets/0cef973d-0a3e-41f8-9ec3-a0cc2ca3b697" />
 
-![Базові вимірювання (meta)]
+ Базові вимірювання 
 
 * * *
 
@@ -90,12 +90,12 @@ function profile(callable $fn): array
 Запущено Apache Bench на цей самий ендпоінт у режимі `slow`: 200 запитів, 20 паралельних клієнтів. Зафіксовано `Requests per second`, `Time per request (mean)` та `Failed requests`.
 
 ```bash
-ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms&mode=slow"
+ab -n 200 -c 20 "http://localhost:8000/api.php?resource=rooms&mode=slow"
 ```
 
-<img width="817" height="591" alt="Screenshot 2026-11-10 at 11 39 31" src="https://github.com/user-attachments/assets/6b2b348d-60da-4387-b02f-058ff61acad5" />
+<img width="1308" height="924" alt="image" src="https://github.com/user-attachments/assets/05332499-b3d0-4daa-bad2-0bbd9f62f298" />
 
-![ab до оптимізацій]
+ ab до оптимізацій
 
 * * *
 
@@ -129,9 +129,9 @@ foreach ($rooms as &$room) {
 }
 ```
 
-<img width="760" height="470" alt="image" src="https://github.com/user-attachments/assets/58ebd06d-648c-4725-81ba-ce5047ffa5ab" />
+<img width="1362" height="896" alt="image" src="https://github.com/user-attachments/assets/b40b712c-423d-4abc-bf72-c214aef5c51b" />
 
-![Лічильник SQL-запитів: 501]
+ Лічильник SQL-запитів: 501
 
 * * *
 
@@ -140,19 +140,20 @@ foreach ($rooms as &$room) {
 Виконано `EXPLAIN` для запиту з фільтром за місткістю до створення індексу, створено індекс `idx_rooms_capacity` на стовпці `capacity` і повторено `EXPLAIN`. Порівнюються стовпці `type` та `rows`.
 
 ```sql
-EXPLAIN SELECT * FROM rooms WHERE capacity = 8;     -- до: type=ALL, rows≈500
+EXPLAIN SELECT * FROM rooms WHERE capacity = 8;     -- до: type=ALL, rows=500
 CREATE INDEX idx_rooms_capacity ON rooms (capacity);
-EXPLAIN SELECT * FROM rooms WHERE capacity = 8;     -- після: type=ref, rows≈25
+EXPLAIN SELECT * FROM rooms WHERE capacity = 8;     -- після: type=ref, rows=25
 ```
 
 До індексу СУБД перебирала всі рядки таблиці (повне сканування `ALL`), після — використовує індекс (`ref`) і переглядає лише рядки з потрібною місткістю.
 
-<img width="598" height="160" alt="Screenshot 2026-11-10 at 11 43 40" src="https://github.com/user-attachments/assets/347c0a61-6b69-43ea-a876-fcd4b6088422" />
+<img width="1186" height="340" alt="image" src="https://github.com/user-attachments/assets/a39862f0-0bb4-4c84-a9d6-2fe99e8a17d9" />
 
-![EXPLAIN до індексу]
-<img width="645" height="281" alt="Screenshot 2026-11-10 at 11 44 30" src="https://github.com/user-attachments/assets/94c2a52a-ae33-42e6-8206-b41d27482ed0" />
+ EXPLAIN до індексу 
+<img width="1272" height="348" alt="image" src="https://github.com/user-attachments/assets/9c73cf8d-050d-42a5-80d9-6834aa05e2ed" />
 
-![EXPLAIN після індексу]
+ EXPLAIN після індексу 
+<img width="1568" height="652" alt="image" src="https://github.com/user-attachments/assets/e090ed0e-cc98-44fa-98d7-1d2ca04fed63" />
 
 * * *
 
@@ -173,9 +174,9 @@ function listRoomsFast(PDO $pdo): array
 }
 ```
 
-<img width="719" height="464" alt="Screenshot 2026-11-10 at 11 45 42" src="https://github.com/user-attachments/assets/a8807dfe-f496-45a1-bb5a-4d033709269f" />
+<img width="1375" height="868" alt="image" src="https://github.com/user-attachments/assets/d04501b0-288e-404a-b3c9-9aaec5522d89" />
 
-![Один SQL-запит замість 501]
+ Один SQL-запит замість 501
 
 * * *
 
@@ -210,16 +211,18 @@ function cachedQuery(PDO $pdo, string $key, string $sql, array $params = [], int
 Перевірка: на сторінці вимірювань (блок «Вільні кімнати за місткістю») перший пошук дає `MISS` і 1 SQL-запит, повторний — `HIT` і 0 SQL-запитів. Після створення кімнати (`POST`) наступний пошук знову `MISS`.
 
 ```bash
-ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms&available=1&capacity=4&cache=0"
-ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms&available=1&capacity=4&cache=1"
+ab -n 200 -c 20 "http://localhost:8000/api.php?resource=rooms&available=1&capacity=4&cache=0"
+ab -n 200 -c 20 "http://localhost:8000/api.php?resource=rooms&available=1&capacity=4&cache=1"
 ```
 
-<img width="717" height="227" alt="Screenshot 2026-11-10 at 11 47 27" src="https://github.com/user-attachments/assets/37eb1fc8-714c-4545-b7b9-301ece87907f" />
+<img width="1442" height="442" alt="image" src="https://github.com/user-attachments/assets/ce81b1ee-7e5b-43ec-bd4b-b6a3324af542" />
 
-![Кеш: MISS]
-<img width="708" height="224" alt="Screenshot 2026-11-10 at 11 47 39" src="https://github.com/user-attachments/assets/288f5ecf-3fb8-43d9-9eeb-b2a8626be1d0" />
+ Кеш: MISS 
+<img width="1424" height="462" alt="image" src="https://github.com/user-attachments/assets/2d51bf32-d67f-4904-86e7-e5dcf9f01e32" />
 
-![Кеш: HIT]
+ Кеш: HIT 
+<img width="1400" height="855" alt="image" src="https://github.com/user-attachments/assets/36ab74e3-f65b-4461-9974-1c3ffa515028" /> 
+<img width="1400" height="841" alt="image" src="https://github.com/user-attachments/assets/b6db431e-c9ac-4355-8be7-f6445441bc38" />
 
 * * *
 
@@ -228,14 +231,14 @@ ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms&availa
 Виконано той самий профайлінг і той самий `ab`-тест на оптимізованому коді (індекс створено, N+1 усунуто — режим `fast` за замовчуванням).
 
 ```bash
-ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms"
+ab -n 200 -c 20 "http://localhost:8000/api.php?resource=rooms"
 ```
 
 Нові значення часу, пам'яті та `Requests per second` внесено до таблиці у кроці 8.
 
-<img width="678" height="575" alt="Screenshot 2026-11-10 at 11 52 28" src="https://github.com/user-attachments/assets/5ca40a5b-451f-4a75-a3b9-b992e9a185f6" />
+<img width="1299" height="924" alt="image" src="https://github.com/user-attachments/assets/f556edad-f20d-48e1-87e7-453aaf73bccc" />
 
-![ab після оптимізацій]
+ ab після оптимізацій
 
 * * *
 
@@ -245,11 +248,11 @@ ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms"
 
 | Показник | До (N+1, без індексу) | Після (JOIN + індекс) |
 |----------|-----------------------|-----------------------|
-| Час виконання, мс | 70.04 | 2.46 |
+| Час виконання, мс | 71.84 | 2.68 |
 | Пікова пам'ять, МБ | 2 | 2 |
 | SQL-запитів на виклик | 501 | 1 |
-| Requests per second | 3431.71 | 6430.66 |
-| Time per request (mean), мс | 5.828 | 3.110 |
+| Requests per second | 23.35 | 381.81 |
+| Time per request (mean), мс | 856.523 | 52.381 |
 | Failed requests | 0 | 0 |
 
 **Вільні кімнати за місткістю (`findAvailable`, 200 запитів / 20 клієнтів):**
@@ -257,14 +260,14 @@ ab -n 200 -c 20 "http://localhost:8000/practicum_7/api.php?resource=rooms"
 | Показник | Без кешу | З кешем (TTL 60 с) |
 |----------|----------|--------------------|
 | SQL-запитів на виклик | 1 | 0 (при HIT) |
-| Requests per second | 563.01 | 1057.93 |
-| Time per request (mean), мс | 35.524 | 18.905 |
+| Requests per second | 630.95 | 1345.84 |
+| Time per request (mean), мс | 31.698 | 14.861 |
 
-**Пояснення причини різниці:** замість одного запиту на список і 500 окремих запитів `COUNT(*)` (по одному на кожну кімнату) застосунок виконує єдиний запит з агрегацією `GROUP BY` і `JOIN`, а індекс на `capacity` дозволяє СУБД не сканувати всю таблицю; кеш для `findAvailable` прибирає звернення до БД взагалі, поки запис не застаріє.
+**Пояснення причини різниці:** замість одного запиту на список і 500 окремих запитів `COUNT(*)` застосунок виконує один запит з `GROUP BY` і `JOIN`, тому кількість SQL-запитів зменшилась з 501 до 1, а пропускна здатність зросла приблизно в 16 разів (23.35 → 381.81 запитів/с); індекс на `capacity` прибрав повне сканування таблиці (`type: ALL → ref`, `rows: 500 → 25`), а кеш `findAvailable` усунув звернення до БД при повторних запитах (приблизно вдвічі більше запитів/с).
 
-<img width="716" height="537" alt="Screenshot 2026-11-10 at 11 54 09" src="https://github.com/user-attachments/assets/42f66276-e2b3-47e5-a2b7-6de85b92379a" />
+<img width="732" height="540" alt="Screenshot 2026-11-11 at 10 48 06" src="https://github.com/user-attachments/assets/0256f533-246f-4d21-8786-622348ef5190" />
 
-![Панель вимірювань]
+ Панель вимірювань
 
 * * *
 
