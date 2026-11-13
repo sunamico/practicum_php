@@ -1,9 +1,9 @@
 <?php
 $host = '127.0.0.1';
-$port = '8889'; 
+$port = '8889';
 $dbname = 'practicum5';
 $user = 'root';
-$password = 'root'; 
+$password = 'root';
 
 $dsn = "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4";
 
@@ -16,9 +16,10 @@ $options = [
 try {
     $pdo = new PDO($dsn, $user, $password, $options);
 } catch (PDOException $e) {
+    // Деталі — лише в лог сервера, клієнту — загальне повідомлення
+    error_log('DB connection error: ' . $e->getMessage());
     header('Content-Type: application/json');
     http_response_code(500);
-    echo json_encode(['error' => 'Помилка підключення до БД: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Не вдалося підключитися до бази даних']);
     exit;
 }
-?>
