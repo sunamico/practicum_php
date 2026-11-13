@@ -1,21 +1,44 @@
 # Практична робота №5
-**Тема:** Взаємодія фронтенду та бекенду: AJAX, обмін даними JSON  
-**Домен:** Система бронювання (готель/зали) (Варіант 8)  
-**Студентка:** Савченко Руслана  
+
+**Тема:** Взаємодія фронтенду та бекенду: AJAX, обмін даними у форматі JSON
+**Домен:** Система бронювання (готель/зали) — варіант №8
+**Студентка:** Савченко Руслана
 **Група:** ІО-44
 
 ---
 
-## Мета роботи 
-- Навчитися виконувати AJAX-запити з JavaScript (fetch) до власного PHP-ендпоінта, що повертає дані у форматі JSON; опрацьовувати відповідь на клієнті та оновлювати вміст сторінки (DOM) без її повного перезавантаження; чітко розрізняти класичний цикл «форма → перезавантаження сторінки» з практикумів №1–2 і асинхронний обмін даними, на якому будується сучасний JavaScript-фронтенд. 
+## Мета роботи
+
+Навчитися виконувати AJAX-запити з JavaScript (`fetch`) до власних PHP-ендпоінтів, що повертають дані у форматі JSON; опрацьовувати відповідь на клієнті та оновлювати вміст сторінки (DOM) без її повного перезавантаження; чітко розрізняти класичний цикл «форма → перезавантаження сторінки» з практикумів №1–2 і асинхронний обмін даними, на якому будується сучасний JavaScript-фронтенд.
+
 ---
+
 ## Варіант №8: Система бронювання (готель/зали)
-- **Ендпоінт:** `api_list.php` → JSON-масив `rooms` (`id, number, capacity, price_per_night`).
-- **Пошук:** жива фільтрація за мінімальною місткістю (`capacity`) через подію `input`, без перезавантаження.
-- **Додавання:** `api_add.php` (POST) додає запис; після бронювання картка кімнати позначається зайнятою без перезавантаження сторінки.
-___
+
+- **Ендпоінт списку:** `api_list.php` → JSON `{"rooms": [...]}`, де кожен елемент має поля `id`, `number`, `capacity`, `price_per_night`, `is_booked`.
+- **Пошук:** жива фільтрація за мінімальною місткістю (параметр `capacity`) через подію `input`, без перезавантаження.
+- **Додавання:** `api_add.php` (POST) додає номер у БД.
+- **Бронювання:** `api_book.php` (POST) позначає номер зайнятим; картка на сторінці оновлюється без перезавантаження.
+
+### Структура проєкту
+
+| Файл | Призначення |
+|---|---|
+| `init.sql` | створення БД `practicum5`, таблиці `rooms` і тестових даних |
+| `db.php` | підключення до MySQL через PDO |
+| `api_list.php` | список номерів (з необов'язковим фільтром за місткістю) |
+| `api_add.php` | додавання номера |
+| `api_book.php` | бронювання номера |
+| `index.html`, `style.css` | розмітка та оформлення |
+| `script.js` | уся клієнтська логіка (`fetch`, рендер, обробка помилок) |
+
+
+
+---
+
 ## Структура бази даних
-Для реалізації системи було створено базу даних `practicum5` та таблицю `rooms` з такою структурою:
+
+Створено базу даних `practicum5` (кодування `utf8mb4`) та таблицю `rooms`:
 
 ```sql
 CREATE TABLE IF NOT EXISTS rooms (
@@ -23,20 +46,24 @@ CREATE TABLE IF NOT EXISTS rooms (
     number VARCHAR(50) NOT NULL,
     capacity INT NOT NULL,
     price_per_night DECIMAL(10,2) NOT NULL,
-    is_booked BOOLEAN DEFAULT FALSE
-);
+    is_booked BOOLEAN NOT NULL DEFAULT FALSE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
-<img width="337" height="173" alt="image" src="https://github.com/user-attachments/assets/25c22f4c-03c3-4bd8-9c88-17bc2eed7b8f" />
+
+Поле `is_booked` зберігає стан бронювання (`0` — вільно, `1` — зайнято).
+<img width="480" height="175" alt="Screenshot 2026-11-13 at 18 07 56" src="https://github.com/user-attachments/assets/ef956808-611f-40cb-a4a0-1ec659c8939c" />
+
+Таблиця rooms у phpMyAdmin
 
 ---
 
 ## Хід виконання роботи
 
 ### Крок 1. Підготувати JSON-ендпоінт списку (`api_list.php`)
-Створено серверний скрипт, який підключається до бази даних через PDO (`db.php`), отримує з параметрів URL фільтр мінімальної місткості (`$_GET['capacity']`), виконує підготовлений SQL-запит `SELECT` та повертає JSON-об'єкт `{"rooms": [...]}` із заголовком `Content-Type: application/json`. У разі збою БД текст винятку записується в серверний лог через `error_log()`, а клієнту повертається узагальнене повідомлення зі статусом `500`.
 
-**Фрагмент коду (`api_list.php`):**
-```
+Скрипт підключається до БД через PDO (`db.php`), читає з URL необов'язковий параметр `capacity`, виконує підготовлений запит `SELECT` і повертає результат у форматі JSON із заголовком `Content-Type: application/json`. Значення параметра передається через плейсхолдер, що захищає від SQL-ін'єкцій.
+
+```php
 <?php
 require_once 'db.php';
 header('Content-Type: application/json');
@@ -60,176 +87,159 @@ try {
     echo json_encode(['error' => 'Внутрішня помилка сервера']);
 }
 ```
-<img width="1283" height="117" alt="image" src="https://github.com/user-attachments/assets/8b29f300-7801-4b6a-a415-c7674c66fa66" />
+<img width="2566" height="234" alt="image" src="https://github.com/user-attachments/assets/7a99a051-532b-47a9-8c97-f2a4de242b70" />
+
 
 ---
 
 ### Крок 2. Підготувати сторінку з контейнером для результатів (`index.html`)
-Створено розмітку HTML-сторінки з використанням пастельно-рожевого стилю (`style.css`). На сторінці розміщено:
-- Поле для «живого» пошуку номерів за місткістю (`<input id="search-capacity">`).
-- Форму додавання нового номера (`<form id="add-room-form">`).
-- Порожній контейнер для динамічного виводу карток номерів (`<div id="rooms-list"></div>`).
-- Блок для відображення помилок (`<div id="error-message"></div>`).
 
-**Фрагмент коду (`index.html`):**
+Розмітка містить:
+
+- поле «живого» пошуку `#search-capacity`;
+- форму додавання `#add-room-form`;
+- блок для повідомлень про помилки `#error-message`;
+- порожній контейнер `#results`, який заповнюється карточками через JavaScript.
+
 ```html
-<div class="container">
-    <h1>Бронювання номерів</h1>
-    
-    <div class="top-controls">
-        <div class="search-box">
-            <label for="search-capacity">Пошук від місткості (ос.):</label>
-            <input type="number" id="search-capacity" placeholder="Наприклад: 2">
-        </div>
-
-        <div class="form-box">
-            <h3>Додати новий номер</h3>
-            <form id="add-room-form">
-                <input type="text" id="add-number" placeholder="Назва/Номер" required>
-                <input type="number" id="add-capacity" placeholder="Місткість" required>
-                <input type="number" id="add-price" placeholder="Ціна (грн)" required>
-                <button type="submit" class="btn btn-success">Додати</button>
-            </form>
-        </div>
+<div class="top-controls">
+    <div class="search-box">
+        <label for="search-capacity">Пошук від місткості (ос.):</label>
+        <input type="number" id="search-capacity" placeholder="Наприклад: 2" min="1">
     </div>
 
-    <div id="error-message"></div>
-    <div id="rooms-list" class="rooms-grid"></div>
+    <div class="form-box">
+        <h3>Додати новий номер</h3>
+        <form id="add-room-form">
+            <input type="text" id="add-number" placeholder="Назва/Номер" maxlength="50" required>
+            <input type="number" id="add-capacity" placeholder="Місткість" min="1" max="1000" step="1" required>
+            <input type="number" id="add-price" placeholder="Ціна (грн)" step="0.01" min="0.01" required>
+            <button type="submit" class="btn btn-success">Додати</button>
+        </form>
+    </div>
 </div>
+
+<div id="error-message" aria-live="polite"></div>
+<div id="results" class="rooms-grid"></div>
 ```
-<img width="1447" height="535" alt="image" src="https://github.com/user-attachments/assets/9ebb975e-4d53-4994-bdc6-e64dd1f06106" />
+
+Оформлення (пастельно-рожева гама) винесено у `style.css`.
+<img width="1470" height="708" alt="Screenshot 2026-11-13 at 18 08 24" src="https://github.com/user-attachments/assets/b4a8ac8c-b1f2-4538-a761-ed9f6905dbe4" />
+
+Головна сторінка
+
 ---
 
 ### Крок 3. Завантажити список через AJAX при відкритті сторінки (`script.js`)
-Написано функцію `loadRooms()`, яка за допомогою `fetch('api_list.php')` виконує асинхронний запит до сервера, отримує JSON-дані, генерує HTML-картки для кожного номера та вставляє їх у контейнер `#rooms-list` без використання PHP-вставок всередині HTML.
 
-**Фрагмент коду (`script.js`):**
-```javascript
-async function loadRooms(query = '') {
+Функція `loadRooms()` за допомогою `fetch` робить асинхронний запит до `api_list.php`, перевіряє `response.ok`, розбирає JSON і передає масив `rooms` у `renderRooms()`. Функція `renderRooms()` створює карточку для кожного номера: заброньовані отримують клас `booked` і мітку «Зайнято», вільні — кнопку «Забронювати». Усі дані з БД проходять через `escapeHTML()` для захисту від XSS.
+
+```js
+async function loadRooms(minCapacity = '') {
+    const requestId = ++requestCounter;
     try {
-        const url = query ? `api_list.php?q=${encodeURIComponent(query)}` : 'api_list.php';
+        const url = minCapacity
+            ? `api_list.php?capacity=${encodeURIComponent(minCapacity)}`
+            : 'api_list.php';
+
         const response = await fetch(url);
-        
-        if (!response.ok) throw new Error(`Помилка сервера: ${response.status}`);
-        
-        const rooms = await response.json();
-        renderRooms(rooms);
+        const data = await readJson(response);
+
+        if (requestId !== requestCounter) return; // прийшла застаріла відповідь
+
+        if (!response.ok || data.error) {
+            throw new Error(data.error || `Помилка сервера: ${response.status}`);
+        }
+
+        clearError();
+        renderRooms(data.rooms);
     } catch (err) {
+        if (requestId !== requestCounter) return;
         showError(`Помилка завантаження: ${err.message}`);
     }
 }
-
-function renderRooms(rooms) {
-    roomsList.innerHTML = '';
-    if (rooms.length === 0) {
-        roomsList.innerHTML = '<p>Номерів не знайдено.</p>';
-        return;
-    }
-
-    rooms.forEach(room => {
-        const card = document.createElement('div');
-        card.className = 'room-card';
-        card.innerHTML = `
-            <div class="card-header">
-                <h3>Номер: ${room.number}</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Місткість:</strong> ${room.capacity} ос.</p>
-                <p><strong>Ціна:</strong> ${room.price_per_night} грн/ніч</p>
-            </div>
-        `;
-        roomsList.appendChild(card);
-    });
-}
-
-document.addEventListener('DOMContentLoaded', () => loadRooms());
 ```
-<img width="943" height="188" alt="image" src="https://github.com/user-attachments/assets/0a0e57d2-2c2d-48a3-9a10-f9d3f5244611" />
+
+```js
+card.innerHTML = `
+    <div class="card-header">
+        <h3>${escapeHTML(room.number)}</h3>
+    </div>
+    <div class="card-body">
+        <p><strong>Місткість:</strong> ${escapeHTML(room.capacity)} ос.</p>
+        <p><strong>Ціна:</strong> ${escapeHTML(room.price_per_night)} грн/ніч</p>
+    </div>
+    <div class="card-footer">
+        ${booked
+            ? '<span class="badge danger">Зайнято</span>'
+            : `<button type="button" class="btn btn-primary" data-book-id="${Number(room.id)}">Забронювати</button>`}
+    </div>
+`;
+```
+
+Лічильник `requestCounter` гарантує, що повільна застаріла відповідь не перезапише новішу.
+<img width="1419" height="369" alt="Screenshot 2026-11-13 at 18 09 04" src="https://github.com/user-attachments/assets/bad7a75a-7120-410c-855b-2be1a3fcfe02" />
+
+Список номерів, завантажений через AJAX
 
 ---
 
 ### Крок 4. Реалізувати живий пошук без перезавантаження
-На подію `input` для поля пошуку `#search-capacity` додано обробник. При введенні числа викликається `fetch('api_list.php?q=' + значення)`, сервер фільструє кімнати за місткістю, а клієнтський скрипт миттєво перемальовує вміст контейнера.
 
-**Фрагмент коду (`script.js`):**
-```javascript
+На подію `input` поля `#search-capacity` додано обробник із короткою затримкою (debounce, 250 мс), щоб не надсилати запит на кожне натискання клавіші. Сервер фільтрує номери за умовою `capacity >= значення`, а `renderRooms()` перемальовує вміст контейнера.
+
+```js
 searchInput.addEventListener('input', (e) => {
-    const query = e.target.value.trim();
-    loadRooms(query);
+    const value = e.target.value.trim();
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => loadRooms(value), 250);
 });
 ```
-<img width="700" height="414" alt="image" src="https://github.com/user-attachments/assets/f6eb6953-31f1-4500-925c-576432e44b66" />
+<img width="722" height="472" alt="Screenshot 2026-11-13 at 18 09 39" src="https://github.com/user-attachments/assets/53ca5b19-1ae8-49b0-acf1-e620967cff04" />
+
+Живий пошук за місткістю
 
 ---
 
 ### Крок 5. Підготувати ендпоінт додавання запису (`api_add.php`)
-Створено скрипт `api_add.php`, який приймає JSON-потік через `php://input` методом `POST` та виконує сувору серверну валідацію:
-- перевіряє, що `number` є непорожнім рядком (`is_string`), відхиляючи масиви та некоректні типи;
-- перевіряє, що `capacity` та `price_per_night` є числами (`is_numeric`) і мають суворо додатні значення (`> 0`).
 
-У разі невалідних даних сервер повертає статус `400 Bad Request`. Коректні дані записуються в БД через підготовлений запит `INSERT`, після чого повертається статус `201 Created` та створений об'єкт кімнати. Деталі винятків БД приховуються від клієнта та логуються через `error_log()`.
+Скрипт приймає лише `POST` (інакше `405`), читає JSON з `php://input` і валідує поля на сервері:
 
-**Фрагмент коду (`api_add.php`):**
-```
-<?php
-require_once 'db.php';
-header('Content-Type: application/json');
+- `number` — непорожній рядок до 50 символів;
+- `capacity` — ціле число від 1 до 1000 (`FILTER_VALIDATE_INT`, тож `2.7` відхиляється);
+- `price_per_night` — число більше 0, не більше двох знаків після коми.
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['error' => 'Метод не підтримується']);
-    exit;
-}
+Далі виконується підготовлений запит `INSERT`; у відповідь повертається доданий об'єкт зі статусом `201 Created`.
 
-$data = json_decode(file_get_contents('php://input'), true);
-
-if (!is_array($data)) {
+```php
+$capacity = filter_var($data['capacity'] ?? null, FILTER_VALIDATE_INT, [
+    'options' => ['min_range' => 1, 'max_range' => 1000]
+]);
+if ($capacity === false) {
     http_response_code(400);
-    echo json_encode(['error' => 'Некоректний формат JSON']);
+    echo json_encode(['error' => 'Місткість (capacity) має бути цілим числом від 1 до 1000']);
     exit;
 }
 
-// Перевірка, що number є рядком (відсіює масиви та інші типи) і не порожній
-if (!isset($data['number']) || !is_string($data['number']) || trim($data['number']) === '') {
+$priceRaw = isset($data['price_per_night']) ? (string)$data['price_per_night'] : '';
+if (!preg_match('/^\d{1,8}(\.\d{1,2})?$/', $priceRaw) || (float)$priceRaw <= 0) {
     http_response_code(400);
-    echo json_encode(['error' => 'Поле number має бути непорожнім рядком']);
+    echo json_encode(['error' => 'Ціна (price_per_night) має бути числом більше 0 (до 2 знаків після коми)']);
     exit;
 }
-
-// Перевірка, що capacity та price_per_night є числами та більші за 0
-if (!isset($data['capacity']) || !is_numeric($data['capacity']) || (int)$data['capacity'] <= 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Місткість (capacity) має бути цілим числом більше 0']);
-    exit;
-}
-
-if (!isset($data['price_per_night']) || !is_numeric($data['price_per_night']) || (float)$data['price_per_night'] <= 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Ціна (price_per_night) має бути числом більше 0']);
-    exit;
-}
-
-$number = trim($data['number']);
-$capacity = (int)$data['capacity'];
-$price = (float)$data['price_per_night'];
+$price = number_format((float)$priceRaw, 2, '.', '');
 
 try {
     $stmt = $pdo->prepare('INSERT INTO rooms (number, capacity, price_per_night) VALUES (:number, :capacity, :price)');
-    $stmt->execute([
-        ':number' => $number,
-        ':capacity' => $capacity,
-        ':price' => $price
-    ]);
-
-    $id = $pdo->lastInsertId();
+    $stmt->execute([':number' => $number, ':capacity' => $capacity, ':price' => $price]);
 
     http_response_code(201);
     echo json_encode([
-        'id' => $id,
-        'number' => $number,
-        'capacity' => $capacity,
+        'id'              => (int)$pdo->lastInsertId(),
+        'number'          => $number,
+        'capacity'        => $capacity,
         'price_per_night' => $price,
-        'is_booked' => 0
+        'is_booked'       => 0
     ]);
 } catch (Exception $e) {
     error_log('api_add error: ' . $e->getMessage());
@@ -237,70 +247,131 @@ try {
     echo json_encode(['error' => 'Не вдалося додати запис через помилку сервера']);
 }
 ```
+
+Деталі помилок БД записуються лише в лог сервера (`error_log`); клієнт отримує загальне повідомлення.
+<img width="680" height="214" alt="Screenshot 2026-11-13 at 18 18 44" src="https://github.com/user-attachments/assets/2c9d271f-2ae9-4fcd-aa0e-f20499468857" />
+
+<img width="675" height="210" alt="Screenshot 2026-11-13 at 18 18 59" src="https://github.com/user-attachments/assets/7c215bf6-a350-4c29-96f2-188000ecf07d" />
+
 ---
 
 ### Крок 6. Додати запис через AJAX без перезавантаження сторінки
-Оброблено подію `submit` для форми додавання. Викликом `e.preventDefault()` скасовано стандартне перезавантаження сторінки. Дані форми зчитуються, формуються у JSON та надсилаються методом `POST` за допомогою `fetch('api_add.php')`. Після успішної відповіді викликається `loadRooms()`, і новий номер одразу з'являється у списку.
 
-**Фрагмент коду (`script.js`):**
-```javascript
+На подію `submit` форми викликається `e.preventDefault()`, що скасовує стандартне перезавантаження. Дані формуються в JSON і надсилаються методом `POST` через `fetch`. Поки запит виконується, кнопка вимкнена (захист від подвійного надсилання). Після успіху форма очищується, а список оновлюється викликом `loadRooms()` з урахуванням поточного фільтра.
+
+```js
 addForm.addEventListener('submit', async (e) => {
     e.preventDefault();
-    errorMsg.innerHTML = '';
-    
+    clearError();
+
+    const submitBtn = addForm.querySelector('button[type="submit"]');
     const roomData = {
-        number: document.getElementById('add-number').value,
-        capacity: document.getElementById('add-capacity').value,
-        price_per_night: document.getElementById('add-price').value
+        number: document.getElementById('add-number').value.trim(),
+        capacity: document.getElementById('add-capacity').value.trim(),
+        price_per_night: document.getElementById('add-price').value.trim()
     };
 
+    submitBtn.disabled = true;
     try {
         const response = await fetch('api_add.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(roomData)
         });
-        
-        const resData = await response.json();
+        const resData = await readJson(response);
+
         if (!response.ok || resData.error) {
             throw new Error(resData.error || `Помилка сервера: ${response.status}`);
         }
-        
-        loadRooms(searchInput.value.trim());
+
         addForm.reset();
+        loadRooms(searchInput.value.trim());
     } catch (err) {
         showError(`Помилка додавання: ${err.message}`);
+    } finally {
+        submitBtn.disabled = false;
     }
 });
 ```
-<img width="687" height="229" alt="image" src="https://github.com/user-attachments/assets/ab437ce0-12aa-49c8-9646-78629a71e45d" />
-<img width="237" height="191" alt="image" src="https://github.com/user-attachments/assets/a0e2f20d-3ad8-4357-bd5b-95d57de4ffa0" />
+<img width="689" height="236" alt="Screenshot 2026-11-13 at 18 11 00" src="https://github.com/user-attachments/assets/1047f47f-7186-4d37-b6fc-04dbb3c14fad" /> 
+Додавання нового номера
+<img width="226" height="173" alt="Screenshot 2026-11-13 at 18 11 17" src="https://github.com/user-attachments/assets/c10f7ab7-2511-4f7d-85b2-7271cd467ec0" />
+
+Новий номер у списку без перезавантаження
 
 ---
 
-### Крок 7. Обробити помилки мережі та сервера
-На стороні сервера (`api_list.php`, `api_add.php`, `api_book.php`) усі запити до БД обгорнуті в блоки `try...catch`: технічні повідомлення винятків (`$e->getMessage()`) не передаються у відповідь клієнту, а фіксуються у журналі сервера через `error_log()`, тоді як клієнт отримує безпечне повідомлення про помилку (`400` для невалідних вхідних даних, `500` для збоїв сервера).
+### Крок 7. Бронювання номера (`api_book.php`)
 
-На клієнті всі `fetch`-запити обгорнуті в `try...catch` із перевіркою `response.ok`, а текст помилки відображається у блоці `#error-message`.
-**Фрагмент коду (`script.js`):**
-```javascript
+Ендпоінт `api_book.php` приймає `{ "id": N }` і виконує атомарне оновлення `UPDATE rooms SET is_booked = 1 WHERE id = :id AND is_booked = 0`. Перевірка `rowCount()` дозволяє розрізнити результати:
+
+- `200` — номер успішно заброньовано;
+- `404` — номера з таким `id` немає;
+- `409` — номер уже заброньований (захист від подвійного бронювання).
+
+```php
+$stmt = $pdo->prepare('UPDATE rooms SET is_booked = 1 WHERE id = :id AND is_booked = 0');
+$stmt->execute([':id' => $id]);
+
+if ($stmt->rowCount() === 1) {
+    echo json_encode(['success' => true]);
+    exit;
+}
+// інакше: 404 (номера немає) або 409 (уже заброньовано)
+```
+
+На клієнті кліки по кнопках «Забронювати» обробляються через делегування подій на контейнері `#results`. Після успішної відповіді картка отримує клас `booked`, а кнопка замінюється міткою «Зайнято» — без перезавантаження та без повторного запиту списку. Якщо сервер повернув помилку (наприклад, номер уже забронював хтось інший), список синхронізується з БД і показується повідомлення.
+
+```js
+resultsContainer.addEventListener('click', (e) => {
+    const button = e.target.closest('button[data-book-id]');
+    if (button) bookRoom(button);
+});
+```
+
+<img width="233" height="175" alt="Screenshot 2026-11-13 at 18 11 58" src="https://github.com/user-attachments/assets/f66eef8e-e176-4653-8a20-7f6a27f7b8f4" /> <img width="236" height="185" alt="Screenshot 2026-11-13 at 18 12 21" src="https://github.com/user-attachments/assets/f9d8b07b-7f66-47e3-9662-3834bffd088a" />
+
+Номер до та після бронювання
+
+---
+
+### Крок 8. Обробити помилки мережі та сервера
+
+Усі `fetch`-запити обгорнуто в `try...catch` з перевіркою `response.ok`. Відповідь розбирається функцією `readJson()`, яка не «падає», якщо сервер повернув не JSON. Помилка виводиться у вигляді банера в `#error-message`, а не лише в консоль. Текст вставляється через `textContent`, тому повідомлення з сервера не може виконати HTML/JS-код.
+
+```js
 function showError(message) {
-    errorMsg.innerHTML = `<div class="error-banner">${message}</div>`;
+    const alert = document.createElement('div');
+    alert.className = 'error-alert';
+    alert.textContent = message;
+    errorMsg.replaceChildren(alert);
 }
 ```
-<img width="674" height="111" alt="image" src="https://github.com/user-attachments/assets/f7663dd8-35c4-4357-9787-7ebcf0ac5e62" />
+
+Для перевірки зупинено MySQL у MAMP. Сервер повернув статус `500` із загальним повідомленням, а детальна причина (`Connection refused`) потрапила лише в лог сервера.
+<img width="1391" height="390" alt="Screenshot 2026-11-13 at 18 13 07" src="https://github.com/user-attachments/assets/51bae9f1-3251-4bb7-8e84-e3c8cc203c5d" />
+
+
+Банер помилки при вимкненій БД
 
 ---
 
-### Крок 8. Перевірити результат в інструментах розробника (DevTools)
-Відкрито вкладку **Developer Tools** у браузорі Safari/Chrome:
-1. У вкладці **Network** перевірено, що всі запити до `api_list.php` та `api_add.php` відправляються асинхронно та мають тип **fetch** (або xhr) і повертають правильні HTTP-статуси (`200 OK`, `201 Created`).
-2. У вкладці **Elements** підтверджено, що оновлюється лише внутрішнє DOM-дерево блоку `#rooms-list`, а вся сторінка не перезавантажується.
+### Крок 9. Перевірити результат в інструментах розробника (DevTools)
 
-<img width="1005" height="164" alt="image" src="https://github.com/user-attachments/assets/1b223257-676d-4662-a11e-81953362c583" />
-<img width="855" height="577" alt="image" src="https://github.com/user-attachments/assets/8213b776-5450-4064-98e4-e9a35fb93aeb" />
+У браузері відкрито Developer Tools:
 
+1. На вкладці **Network** видно, що запити до `api_list.php`, `api_add.php` та `api_book.php` мають тип **fetch** і повертають очікувані статуси (`200 OK`, `201 Created`, а при помилках — `400`, `404`, `409`, `500`).
+2. На вкладці **Elements** видно, що змінюється лише внутрішнє дерево контейнера `#results`, а сторінка не перезавантажується.
+<img width="692" height="182" alt="Screenshot 2026-11-13 at 18 15 38" src="https://github.com/user-attachments/assets/5378bef5-22b4-4704-9438-e72d4cd95733" />
+
+Network у DevTools
+<img width="804" height="585" alt="Screenshot 2026-11-13 at 18 17 03" src="https://github.com/user-attachments/assets/44a9a35d-b564-4312-a781-37e981cea359" />
+
+Elements у DevTools
 ---
 
 ## Висновки
-В ході виконання лабораторної роботи було успішно засвоєно принципи створення сучасних Single Page Application (SPA) елементів. Було реалізовано повноцінну взаємодію клієнтської частини з сервером за допомогою AJAX (`fetch`) та формату JSON, що дозволило створити зручний «живий» пошук та додавання даних у БД без перезавантаження сторінки.
+
+У ході практичної роботи реалізовано взаємодію клієнтської частини з сервером за допомогою AJAX (`fetch`) і формату JSON: три PHP-ендпоінти (`api_list.php`, `api_add.php`, `api_book.php`) та JavaScript-клієнт, який оновлює DOM без перезавантаження сторінки. Реалізовано жива фільтрація за місткістю, додавання номерів і бронювання.
+
+Окрему увагу приділено надійності й безпеці: SQL-запити виконуються через підготовлені вирази PDO; вхідні дані валідуються на сервері; дані з БД екрануються перед вставкою в HTML (захист від XSS); бронювання виконується атомарним запитом, який не допускає подвійного бронювання; деталі внутрішніх помилок не показуються користувачеві, а записуються в лог сервера. Помилки мережі та сервера відображаються користувачу у зрозумілому вигляді.
