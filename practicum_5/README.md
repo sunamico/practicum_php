@@ -33,30 +33,32 @@ CREATE TABLE IF NOT EXISTS rooms (
 ## Хід виконання роботи
 
 ### Крок 1. Підготувати JSON-ендпоінт списку (`api_list.php`)
-Створено серверний скрипт, який підключається до бази даних через PDO (`db.php`), отримує з параметрів URL фільтр місткості (`$_GET['q']`), виконує SQL-запит `SELECT` та повертає результат у форматі JSON з відповідним HTTP-заголовком `Content-Type: application/json`.
+Створено серверний скрипт, який підключається до бази даних через PDO (`db.php`), отримує з параметрів URL фільтр мінімальної місткості (`$_GET['capacity']`), виконує підготовлений SQL-запит `SELECT` та повертає JSON-об'єкт `{"rooms": [...]}` із заголовком `Content-Type: application/json`. У разі збою БД текст винятку записується в серверний лог через `error_log()`, а клієнту повертається узагальнене повідомлення зі статусом `500`.
 
 **Фрагмент коду (`api_list.php`):**
-```php
+```
 <?php
 require_once 'db.php';
 header('Content-Type: application/json');
 
-$q = $_GET['q'] ?? '';
-
 try {
-    if ($q !== '') {
-        $stmt = $pdo->prepare("SELECT * FROM rooms WHERE capacity >= :q ORDER BY id DESC");
-        $stmt->execute(['q' => $q]);
+    $min_capacity = isset($_GET['capacity']) && is_numeric($_GET['capacity']) ? (int)$_GET['capacity'] : 0;
+
+    if ($min_capacity > 0) {
+        $stmt = $pdo->prepare('SELECT * FROM rooms WHERE capacity >= :capacity ORDER BY id DESC');
+        $stmt->execute([':capacity' => $min_capacity]);
+        $rooms = $stmt->fetchAll();
     } else {
-        $stmt = $pdo->query("SELECT * FROM rooms ORDER BY id DESC");
+        $stmt = $pdo->query('SELECT * FROM rooms ORDER BY id DESC');
+        $rooms = $stmt->fetchAll();
     }
-    $rows = $stmt->fetchAll();
-    echo json_encode($rows);
-} catch (PDOException $e) {
+
+    echo json_encode(['rooms' => $rooms]);
+} catch (Exception $e) {
+    error_log('api_list error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Помилка сервера: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Внутрішня помилка сервера']);
 }
-?>
 ```
 <img width="1283" height="117" alt="image" src="https://github.com/user-attachments/assets/8b29f300-7801-4b6a-a415-c7674c66fa66" />
 
@@ -161,46 +163,79 @@ searchInput.addEventListener('input', (e) => {
 ---
 
 ### Крок 5. Підготувати ендпоінт додавання запису (`api_add.php`)
-Створено скрипт `api_add.php`, який приймає JSON-потік через `php://input`, валідує отримані дані, додає новий номер у базу даних через підготовлений PDO-запит `INSERT` та повертає JSON із доданим об'єктом і статусом 201 Created.
+Створено скрипт `api_add.php`, який приймає JSON-потік через `php://input` методом `POST` та виконує сувору серверну валідацію:
+- перевіряє, що `number` є непорожнім рядком (`is_string`), відхиляючи масиви та некоректні типи;
+- перевіряє, що `capacity` та `price_per_night` є числами (`is_numeric`) і мають суворо додатні значення (`> 0`).
+
+У разі невалідних даних сервер повертає статус `400 Bad Request`. Коректні дані записуються в БД через підготовлений запит `INSERT`, після чого повертається статус `201 Created` та створений об'єкт кімнати. Деталі винятків БД приховуються від клієнта та логуються через `error_log()`.
 
 **Фрагмент коду (`api_add.php`):**
-```php
+```
 <?php
 require_once 'db.php';
 header('Content-Type: application/json');
 
-$input = json_decode(file_get_contents('php://input'), true);
-
-$number = trim($input['number'] ?? '');
-$capacity = intval($input['capacity'] ?? 0);
-$price = floatval($input['price_per_night'] ?? 0);
-
-if (empty($number) || $capacity <= 0 || $price <= 0) {
-    http_response_code(400);
-    echo json_encode(['error' => 'Некоректні дані']);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['error' => 'Метод не підтримується']);
     exit;
 }
 
+$data = json_decode(file_get_contents('php://input'), true);
+
+if (!is_array($data)) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Некоректний формат JSON']);
+    exit;
+}
+
+// Перевірка, що number є рядком (відсіює масиви та інші типи) і не порожній
+if (!isset($data['number']) || !is_string($data['number']) || trim($data['number']) === '') {
+    http_response_code(400);
+    echo json_encode(['error' => 'Поле number має бути непорожнім рядком']);
+    exit;
+}
+
+// Перевірка, що capacity та price_per_night є числами та більші за 0
+if (!isset($data['capacity']) || !is_numeric($data['capacity']) || (int)$data['capacity'] <= 0) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Місткість (capacity) має бути цілим числом більше 0']);
+    exit;
+}
+
+if (!isset($data['price_per_night']) || !is_numeric($data['price_per_night']) || (float)$data['price_per_night'] <= 0) {
+    http_response_code(400);
+    echo json_encode(['error' => 'Ціна (price_per_night) має бути числом більше 0']);
+    exit;
+}
+
+$number = trim($data['number']);
+$capacity = (int)$data['capacity'];
+$price = (float)$data['price_per_night'];
+
 try {
-    $stmt = $pdo->prepare("INSERT INTO rooms (number, capacity, price_per_night) VALUES (:number, :capacity, :price)");
+    $stmt = $pdo->prepare('INSERT INTO rooms (number, capacity, price_per_night) VALUES (:number, :capacity, :price)');
     $stmt->execute([
-        'number' => $number,
-        'capacity' => $capacity,
-        'price' => $price
+        ':number' => $number,
+        ':capacity' => $capacity,
+        ':price' => $price
     ]);
+
+    $id = $pdo->lastInsertId();
 
     http_response_code(201);
     echo json_encode([
-        'id' => $pdo->lastInsertId(),
+        'id' => $id,
         'number' => $number,
         'capacity' => $capacity,
-        'price_per_night' => $price
+        'price_per_night' => $price,
+        'is_booked' => 0
     ]);
-} catch (PDOException $e) {
+} catch (Exception $e) {
+    error_log('api_add error: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Не вдалося додати запис: ' . $e->getMessage()]);
+    echo json_encode(['error' => 'Не вдалося додати запис через помилку сервера']);
 }
-?>
 ```
 ---
 
@@ -244,8 +279,9 @@ addForm.addEventListener('submit', async (e) => {
 ---
 
 ### Крок 7. Обробити помилки мережі та сервера
-Всі `fetch`-запити обгорнуті в блоки `try...catch`. Реалізовано перевірку `response.ok`. У разі збою (наприклад, помилка з'єднання з БД або відсутність таблиці) помилка відображається у вигляді графічного  банера у блоці `#error-message`, а не лише виводиться у консоль.
+На стороні сервера (`api_list.php`, `api_add.php`, `api_book.php`) усі запити до БД обгорнуті в блоки `try...catch`: технічні повідомлення винятків (`$e->getMessage()`) не передаються у відповідь клієнту, а фіксуються у журналі сервера через `error_log()`, тоді як клієнт отримує безпечне повідомлення про помилку (`400` для невалідних вхідних даних, `500` для збоїв сервера).
 
+На клієнті всі `fetch`-запити обгорнуті в `try...catch` із перевіркою `response.ok`, а текст помилки відображається у блоці `#error-message`.
 **Фрагмент коду (`script.js`):**
 ```javascript
 function showError(message) {
