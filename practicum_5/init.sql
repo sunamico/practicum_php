@@ -1,4 +1,5 @@
-CREATE DATABASE IF NOT EXISTS practicum5;
+CREATE DATABASE IF NOT EXISTS practicum5
+    CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE practicum5;
 
 CREATE TABLE IF NOT EXISTS rooms (
@@ -6,10 +7,10 @@ CREATE TABLE IF NOT EXISTS rooms (
     number VARCHAR(50) NOT NULL,
     capacity INT NOT NULL,
     price_per_night DECIMAL(10,2) NOT NULL,
-    is_booked BOOLEAN DEFAULT FALSE
-);
+    is_booked BOOLEAN NOT NULL DEFAULT FALSE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO rooms (number, capacity, price_per_night, is_booked) VALUES 
+INSERT INTO rooms (number, capacity, price_per_night, is_booked) VALUES
 ('101', 2, 1500.00, 0),
 ('102', 3, 2000.00, 1),
 ('VIP-Зал', 50, 5000.00, 0),
