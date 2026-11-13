@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Система бронювання </title>
+    <title>Система бронювання</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -20,15 +20,15 @@
             <div class="form-box">
                 <h3>Додати новий номер</h3>
                 <form id="add-room-form">
-                    <input type="text" id="add-number" placeholder="Назва/Номер" required>
-                    <input type="number" id="add-capacity" placeholder="Місткість" min="1" required>
-                    <input type="number" id="add-price" placeholder="Ціна (грн)" step="0.01" min="0" required>
+                    <input type="text" id="add-number" placeholder="Назва/Номер" maxlength="50" required>
+                    <input type="number" id="add-capacity" placeholder="Місткість" min="1" max="1000" step="1" required>
+                    <input type="number" id="add-price" placeholder="Ціна (грн)" step="0.01" min="0.01" required>
                     <button type="submit" class="btn btn-success">Додати</button>
                 </form>
             </div>
         </div>
 
-        <div id="error-message"></div>
+        <div id="error-message" aria-live="polite"></div>
         
         <!-- Крок 2: Контейнер для результатів -->
         <div id="results" class="rooms-grid">
